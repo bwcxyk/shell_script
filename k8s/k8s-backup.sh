@@ -46,13 +46,14 @@ function get::resource() {
     echo "Resource:" $r
     for l in $($kubectl -n ${ns} get --ignore-not-found ${r} -o jsonpath="{$.items[*].metadata.name}");do
       $kubectl -n ${ns} get --ignore-not-found ${r} ${l} -o yaml \
-        | sed -n "/ managedFields:/{p; :a; N; / name: ${l}/!ba; s/.*\\n//}; p" \
+        | sed -n '/^apiVersion:/,/^\s*status:/p' \
+        | sed -n '/ managedFields:/,/^.*name:.*$/!p' \
         | sed -e 's/ uid:.*//g' \
-           -e 's/ resourceVersion:.*//g' \
-           -e 's/ selfLink:.*//g' \
-           -e 's/ creationTimestamp:.*//g' \
-           -e 's/ managedFields:.*//g' \
-           -e '/^\s*$/d' > "$RESOURCES_PATH/${ns}/${l}_${r}.yaml"
+          -e 's/ resourceVersion:.*//g' \
+          -e 's/ selfLink:.*//g' \
+          -e 's/ creationTimestamp:.*//g' \
+          -e 's/ managedFields:.*//g' \
+          -e '/^\s*$/d' > "$RESOURCES_PATH/${ns}/${l}_${r}.yaml"
     done
   done
 }

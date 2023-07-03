@@ -58,9 +58,9 @@ function get::resource() {
 }
 
 function get::namespace() {
-  if [[ "${RESOURCES}" == "all" ]]; then
-     NAMESPACE=$($kubectl get ns -o jsonpath="{$.items[*].metadata.name}")
-  fi
+  # if [[ "${RESOURCES}" == "all" ]]; then
+  #    NAMESPACE=$($kubectl get ns -o jsonpath="{$.items[*].metadata.name}")
+  # fi
   for n in ${NAMESPACE};do
     echo "Namespace:" $n
     [ -d "$RESOURCES_PATH/$n" ] || mkdir -p "$RESOURCES_PATH/$n"

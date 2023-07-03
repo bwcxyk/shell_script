@@ -123,13 +123,9 @@ while [ "${1:-}" != "" ]; do
   shift
 done
 
-if [ "$NAMESPACE" != "" ]; then
-  RESOURCES="$RESOURCES -n $NAMESPACE"
-fi
-
 kubectl="kubectl --kubeconfig $KUBECONFIG"
 
 get::namespace
-# [[ "$WITH_CLUSTER" == "true" ]] && get::resource cluster || echo
+#[[ "$WITH_CLUSTER" == "true" ]] && get::resource cluster || echo
 
 echo "File: ${RESOURCES_PATH}"

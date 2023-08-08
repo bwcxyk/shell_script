@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export JENKINS_HOME="/data/jenkins"
+
 ####################################
 # @description jenkins运行脚本
 # @params $? => 代表上一个命令执行后的退出状态: 0->成功,1->失败
@@ -15,14 +17,9 @@ set -eu
 
 # 检查参数个数
 if [ "${#}" -lt 1 ]; then
-	echo -e "\033[41;37m 脚本使用示例: sh jenkins.sh start|stop|restart  \033[0m"
+	echo -e "\033[41;37m 脚本使用示例: jenkins start|stop|restart  \033[0m"
 	exit
 fi
-
-# 设置字符集
-# export LANG=en_US.UTF-8
-# export LANGUAGE=en_US:en
-# export LC_ALL=en_US.UTF-8
 
 # 获取脚本第一个参数
 APP_OPT=${1}
@@ -33,18 +30,18 @@ APP_NAME=jenkins
 # jar名 | war名
 APP=${APP_NAME}.war
 # 程序根目录
-APP_HOME=/usr/share/jenkins
+APP_HOME=/usr/local/jenkins
 # 数据目录
 # export JENKINS_HOME=/data/jenkins
 # 日志名
 APP_LOG_NAME=jenkins
 # 日志根目录
-APP_LOG_HOME=/usr/share/jenkins
+APP_LOG_HOME=/usr/local/jenkins
 # 程序运行参数
 # Jenkins Parameters：https://www.jenkins.io/doc/book/installing/initial-settings/
 # Jenkins properties：https://www.jenkins.io/doc/book/managing/system-properties/
 
-APP_OPTS="--ajp13Port=-1 --httpPort=${APP_PORT} --prefix=/jenkins"
+JENKINS_OPTS="--httpPort=${APP_PORT} --prefix=/jenkins --sessionTimeout=480"
 JAVA_OPTS="-Duser.timezone=Asia/Shanghai -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true"
 
 echo "本次操作服务名：[${APP_NAME}]"
@@ -80,8 +77,8 @@ function start(){
   echo "当前路径:`pwd`"
   # 赋予可读可写可执行权限
   # chmod 777 ${APP}
-  echo "启动命令: nohup ${JAVA_OPTS} java -jar ${APP_HOME}/${APP} ${APP_OPTS} >> ${APP_LOG_HOME}/${APP_NAME}.log 2>&1 &"
-  nohup java ${JAVA_OPTS} -jar ${APP_HOME}/${APP} ${APP_OPTS} >> ${APP_LOG_HOME}/${APP_NAME}.log 2>&1 &
+  echo "启动命令: nohup java ${JAVA_OPTS} -jar ${APP_HOME}/${APP} ${JENKINS_OPTS} > ${APP_LOG_HOME}/${APP_NAME}.log 2>&1 &"
+  nohup java ${JAVA_OPTS} -jar ${APP_HOME}/${APP} ${JENKINS_OPTS} > ${APP_LOG_HOME}/${APP_NAME}.log 2>&1 &
   if [ "$?" -eq 0 ]; then
     echo "[${APP_NAME}] start success"
   else

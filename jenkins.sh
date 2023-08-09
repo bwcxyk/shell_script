@@ -41,8 +41,8 @@ APP_LOG_HOME=/usr/local/jenkins
 # Jenkins Parameters：https://www.jenkins.io/doc/book/installing/initial-settings/
 # Jenkins properties：https://www.jenkins.io/doc/book/managing/system-properties/
 
-JENKINS_OPTS="--httpPort=${APP_PORT} --prefix=/jenkins --sessionTimeout=480"
-JAVA_OPTS="-Duser.timezone=Asia/Shanghai -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true"
+JENKINS_OPTS="--httpPort=${APP_PORT} --prefix=/jenkins --sessionTimeout=480 --sessionEviction=14400"
+JAVA_OPTS="-XX:+UseG1GC -Duser.timezone=Asia/Shanghai -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true"
 
 echo "本次操作服务名：[${APP_NAME}]"
 echo "本次操作选择：[${APP_OPT}]"

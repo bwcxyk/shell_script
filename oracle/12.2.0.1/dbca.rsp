@@ -601,4 +601,4 @@ automaticMemoryManagement=FALSE
 # Default value : 
 # Mandatory     : NO
 #-----------------------------------------------------------------------------
-totalMemory=
+totalMemory=2048

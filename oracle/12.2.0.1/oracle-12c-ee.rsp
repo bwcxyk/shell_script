@@ -39,7 +39,7 @@ UNIX_GROUP_NAME=oinstall
 # This is an optional parameter if installing on
 # Windows based Operating System.
 #-------------------------------------------------------------------------------
-INVENTORY_LOCATION=/data/oraInventory
+INVENTORY_LOCATION=/data/oracle/oraInventory
 #-------------------------------------------------------------------------------
 # Specify the complete path of the Oracle Home. 
 #-------------------------------------------------------------------------------
@@ -243,13 +243,13 @@ oracle.install.db.config.starterdb.installExampleSchemas=false
 
 ###############################################################################
 #                                                                             #
-# Passwords can be supplied for the following four schemas in the	      #
-# starter database:      						      #
+# Passwords can be supplied for the following four schemas in the             #
+# starter database:                                                           #
 #   SYS                                                                       #
 #   SYSTEM                                                                    #
 #   DBSNMP (used by Enterprise Manager)                                       #
 #                                                                             #
-# Same password can be used for all accounts (not recommended) 		      #
+# Same password can be used for all accounts (not recommended)                #
 # or different passwords for each account can be provided (recommended)       #
 #                                                                             #
 ###############################################################################
@@ -315,8 +315,8 @@ oracle.install.db.config.starterdb.emAdminPassword=
 
 ###############################################################################
 #                                                                             #
-# SPECIFY RECOVERY OPTIONS                                 	              #
-# ------------------------------------		                              #
+# SPECIFY RECOVERY OPTIONS                                                    #
+# ------------------------------------                                        #
 # Recovery options for the database can be mentioned using the entries below  #
 #                                                                             #
 ###############################################################################

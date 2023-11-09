@@ -6,11 +6,11 @@ if [ "$1" != "" ];
 fi
 
 tms_user=tms_user
-tms_password=$(openssl rand -base64 12)
+tms_password=\"$(openssl rand -base64 12)\"
 wcpt_user=wcpt_user
-wcpt_password=$(openssl rand -base64 12)
+wcpt_password=\"$(openssl rand -base64 12)\"
 pay_user=pay_user
-pay_password=$(openssl rand -base64 12)
+pay_password=\"$(openssl rand -base64 12)\"
 
 echo "tms_password:$tms_password"
 echo "wcpt_password:$wcpt_password"

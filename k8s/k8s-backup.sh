@@ -2,11 +2,11 @@
 ###################################################################
 #Script Name	: k8s-backup.sh
 #Description	: backup k8s resources.
-#Create Date    : 2020-11-19
-#Author       	: lework
-#Email         	: lework@yeah.net
+#Create Date    : 2024-01-16
+#Author       	: bwcx
+#Email         	: yaokun@bwcxtech.com
 ###################################################################
-# https://github.com/pieterlange/kube-backup/blob/master/entrypoint.sh
+# https://github.com/lework/script/blob/master/shell/k8s/k8s-backup.sh
 
 
 [[ -n $DEBUG ]] && set -x || true
@@ -46,14 +46,13 @@ function get::resource() {
     echo "Resource:" $r
     for l in $($kubectl -n ${ns} get --ignore-not-found ${r} -o jsonpath="{$.items[*].metadata.name}");do
       $kubectl -n ${ns} get --ignore-not-found ${r} ${l} -o yaml \
-        | sed -n '/^apiVersion:/,/^\s*status:/p' \
-        | sed -n '/ managedFields:/,/^.*name:.*$/!p' \
+        | sed -n "/ managedFields:/{p; :a; N; / name: ${l}/!ba; s/.*\\n//}; p" \
         | sed -e 's/ uid:.*//g' \
-          -e 's/ resourceVersion:.*//g' \
-          -e 's/ selfLink:.*//g' \
-          -e 's/ creationTimestamp:.*//g' \
-          -e 's/ managedFields:.*//g' \
-          -e '/^\s*$/d' > "$RESOURCES_PATH/${ns}/${l}_${r}.yaml"
+           -e 's/ resourceVersion:.*//g' \
+           -e 's/ selfLink:.*//g' \
+           -e 's/ creationTimestamp:.*//g' \
+           -e 's/ managedFields:.*//g' \
+           -e '/^\s*$/d' > "$RESOURCES_PATH/${ns}/${l}_${r}.yaml"
     done
   done
 }
@@ -62,6 +61,9 @@ function get::namespace() {
   # if [[ "${RESOURCES}" == "all" ]]; then
   #    NAMESPACE=$($kubectl get ns -o jsonpath="{$.items[*].metadata.name}")
   # fi
+  if [[ "${NAMESPACE}" == "all" ]]; then
+    NAMESPACE=$($kubectl get ns -o jsonpath="{$.items[*].metadata.name}")
+  fi
   for n in ${NAMESPACE};do
     echo "Namespace:" $n
     [ -d "$RESOURCES_PATH/$n" ] || mkdir -p "$RESOURCES_PATH/$n"

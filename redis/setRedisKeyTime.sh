@@ -1,7 +1,4 @@
 #!/bin/bash
-# 设置指定key
-# $(${redis_cli}) -h $db_ip -p $db_port -a $password scan "$new_cursor" count $cnt | awk 'NR==1 || /login:error:times/' > scan_tmp_result
-# awk 命令将打印匹配第一行或包含 "login:error:times" 的所有行。 NR==1 表示行号为1的行，而 /login:error:times/ 表示包含字符串 "login:error:times" 的行。
 
 db_ip=127.0.0.1
 db_port=6379
@@ -13,6 +10,7 @@ exec_time=$(date +%Y%m%d)
 redis_cli=$(pwd)/redis-cli
 log_dir=$(pwd)/redis_modify_key
 log_file="$log_dir/modify_key_$exec_time.log"
+specify_key="login:error:times"
 
 # 创建目录
 mkdirs() {
@@ -23,6 +21,7 @@ mkdirs() {
 
 cleanup() {
     rm -rf scan_tmp_result
+    rm -rf scan_tmp_result2
     rm -rf scan_result
     rm -rf "$log_dir"
 }
@@ -33,8 +32,16 @@ function modifyKeyTime(){
     ${redis_cli} -h $db_ip -p $db_port -a $password scan $cursor count $cnt > scan_tmp_result
     # 获取第一行，scan返回游标值
     new_cursor=$(sed -n '1p' scan_tmp_result)
+    # 进行过滤
+    if [ -n "$specify_key" ]; then
+        # 过滤出包含指定字符串的行
+        grep "login:error:times" scan_tmp_result > scan_tmp_result2
+    else
+        # 不过滤，直接获取100行key数据
+        cat scan_tmp_result > scan_tmp_result2
+    fi
     # 获取第二行到最后一行，100行key数据
-    sed -n '2,$p' scan_tmp_result > scan_result
+    sed -n '2,$p' scan_tmp_result2 > scan_result
     cat scan_result | while read line; do
         ttl_result=$(${redis_cli} -h $db_ip -p $db_port -a $password ttl "$line")
         if [[ $ttl_result == -1 ]];then
@@ -56,9 +63,20 @@ function modifyKeyTime(){
 
     # 以 0 作为游标开始一次新的迭代， 一直调用 SCAN 命令， 直到命令返回游标 0 ，遍历完毕
     while [ $cursor -ne "$new_cursor" ]; do
+        # 使用Redis中的scan命令，以非阻塞的方式实现key值的分页查找
         ${redis_cli} -h $db_ip -p $db_port -a $password scan "$new_cursor" count $cnt > scan_tmp_result
+        # 获取第一行，scan返回游标值
         new_cursor=$(sed -n '1p' scan_tmp_result)
-        sed -n '2,$p' scan_tmp_result > scan_result
+        # 进行过滤
+        if [ -n "$specify_key" ]; then
+            # 过滤出包含指定字符串的行
+            grep "login:error:times" scan_tmp_result > scan_tmp_result2
+        else
+            # 不过滤，直接获取100行key数据
+            cat scan_tmp_result > scan_tmp_result2
+        fi
+        # 获取第二行到最后一行，100行key数据
+        sed -n '2,$p' scan_tmp_result2 > scan_result
         cat scan_result | while read line; do
             ttl_result=$(${redis_cli} -h $db_ip -p $db_port -a $password ttl "$line")
             if [[ $ttl_result == -1 ]];then

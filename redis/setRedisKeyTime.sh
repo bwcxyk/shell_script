@@ -30,7 +30,7 @@ function modifyKeyTime(){
     new_cursor=$(sed -n '1p' scan_tmp_result)
     # 获取第二行到最后一行，100行key数据
     sed -n '2,$p' scan_tmp_result > scan_result
-    while read -r line < scan_result; do
+    cat scan_result | while read line; do
         ttl_result=$(./redis-cli -h $db_ip -p $db_port -a $password ttl "$line")
         if [[ $ttl_result == -1 ]];then
             echo 'key:'"$line" >> ./redis_modify_key/modify_key_"$exec_time".log
@@ -47,14 +47,14 @@ function modifyKeyTime(){
                 echo 'result:'"$result"
             } >> "$log_file"
         fi
-    done < scan_result
+    done
 
     # 以 0 作为游标开始一次新的迭代， 一直调用 SCAN 命令， 直到命令返回游标 0 ，遍历完毕
     while [ $cursor -ne "$new_cursor" ]; do
         ./redis-cli -h $db_ip -p $db_port -a $password scan "$new_cursor" count $cnt > scan_tmp_result
         new_cursor=$(sed -n '1p' scan_tmp_result)
         sed -n '2,$p' scan_tmp_result > scan_result
-        while read -r line < scan_result; do
+        cat scan_result | while read line; do
             ttl_result=$(./redis-cli -h $db_ip -p $db_port -a $password ttl "$line")
             if [[ $ttl_result == -1 ]];then
                 echo 'key:'"$line" >> ./redis_modify_key/modify_key_"$exec_time".log
@@ -70,7 +70,7 @@ function modifyKeyTime(){
                     echo 'result:'"$result"
                 } >> "$log_file"
             fi
-        done < scan_result
+        done
     done
 }
 

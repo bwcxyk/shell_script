@@ -45,7 +45,7 @@ function modifyKeyTime(){
                 echo 'value:'"$value"
                 echo 'expire:'"$time"
                 echo 'result:'"$result"
-            } >> ./redis_modify_key/modify_key_"$exec_time".log
+            } >> "$log_file"
         fi
     done < scan_result
 
@@ -68,7 +68,7 @@ function modifyKeyTime(){
                     echo 'value:'"$value"
                     echo 'expire:'"$time"
                     echo 'result:'"$result"
-                } >> ./redis_modify_key/modify_key_"$exec_time".log
+                } >> "$log_file"
             fi
         done < scan_result
     done

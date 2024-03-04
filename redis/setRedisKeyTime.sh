@@ -1,4 +1,7 @@
 #!/bin/bash
+# 忽略key：| grep -v "特定关键字"
+# 多个key：| grep -E -v "关键字1|关键字2"
+# ./redis-cli -h $db_ip -p $db_port -a $password scan $cursor count $cnt | grep -v "特定关键字"
 
 db_ip=127.0.0.1
 db_port=6379

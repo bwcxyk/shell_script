@@ -1,7 +1,7 @@
 #!/bin/bash
-# 忽略key：| grep -v "特定关键字"
-# 多个key：| grep -E -v "关键字1|关键字2"
-# ./redis-cli -h $db_ip -p $db_port -a $password scan $cursor count $cnt | grep -v "特定关键字"
+# 设置指定key
+# $(${redis_cli}) -h $db_ip -p $db_port -a $password scan "$new_cursor" count $cnt | awk 'NR==1 || /login:error:times/' > scan_tmp_result
+# awk 命令将打印匹配第一行或包含 "login:error:times" 的所有行。 NR==1 表示行号为1的行，而 /login:error:times/ 表示包含字符串 "login:error:times" 的行。
 
 db_ip=127.0.0.1
 db_port=6379

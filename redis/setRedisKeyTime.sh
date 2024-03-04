@@ -20,6 +20,7 @@ mkdirs() {
 cleanup() {
     rm -rf scan_tmp_result
     rm -rf scan_result
+    rm -rf "$log_dir"
 }
 
 # 给Redis永久Key设置过期时间

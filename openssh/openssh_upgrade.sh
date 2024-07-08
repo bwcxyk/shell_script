@@ -13,24 +13,24 @@
 # 下载软件包
 function download_package() {
     mkdir -p /tmp/openssh
-	cd /tmp/openssh
+	cd /tmp/openssh || exit
 	echo -e "\033[34;1m 开始下载软件包openssh-8.4p1-1.el7.centos.x86_64.rpm \033[0m"
 	wget https://gitee.com/yuanfusc/packages/attach_files/671314/download/openssh-8.4p1-1.el7.centos.x86_64.rpm
     if [ $? -ne 0 ]; then
         echo "openssh-8.4p1-1.el7.centos.x86_64.rpm下载失败...请检查网络环境或版本是否存在"
-        exit 2
+        exit
     fi
 	echo -e "\033[34;1m 开始下载软件包openssh-server-8.4p1-1.el7.centos.x86_64.rpm \033[0m"
 	wget https://gitee.com/yuanfusc/packages/attach_files/671313/download/openssh-server-8.4p1-1.el7.centos.x86_64.rpm
     if [ $? -ne 0 ]; then
         echo "openssh-server-8.4p1-1.el7.centos.x86_64.rpm下载失败...请检查网络环境是否正常"
-        exit 2
+        exit
 	fi
 	echo -e "\033[34;1m 开始下载软件包openssh-clients-8.4p1-1.el7.centos.x86_64.rpm \033[0m"
 	wget https://gitee.com/yuanfusc/packages/attach_files/671316/download/openssh-clients-8.4p1-1.el7.centos.x86_64.rpm
 	if [ $? -ne 0 ]; then
 		echo "openssh-8.4p1-1.el7.centos.x86_64.rpm下载失败...请检查网络环境或版本是否存在"
-		exit 2
+		exit
 	fi
 }
 
@@ -69,7 +69,7 @@ function reduction_and_restart() {
 
 # 删除软件包
 function remove_files() {
-	cd /tmp
+	cd /tmp || exit
 	rm -rf openssh
 }
 

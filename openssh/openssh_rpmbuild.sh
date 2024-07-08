@@ -15,7 +15,12 @@ fi
 
 # 安装依赖
 function install_dependency() {
-    yum install -y wget rpm-build zlib-devel openssl-devel gcc perl-devel pam-devel unzip libXt-devel imake gtk2-devel openssl-libs
+    if yum install -y wget rpm-build zlib-devel openssl-devel gcc perl-devel pam-devel unzip libXt-devel imake gtk2-devel openssl-libs; then
+        echo -e "\033[34;1m依赖安装成功 \033[0m"
+    else
+        echo -e "\033[33;1m依赖安装失败 \033[0m"
+        exit 1
+    fi
 }
 
 # 下载软件包
@@ -27,7 +32,7 @@ function download_package() {
         echo "${openssh-version}p1.tar.gz下载成功..."
     else
         echo "openssh-${openssh_version}p1.tar.gz下载失败...请检查网络环境或版本是否存在"
-        exit
+        exit 1
     fi
     tar -xf openssh-"${openssh_version}"p1.tar.gz
     echo -e "\033[34;1m开始下载软件包：x11-ssh-askpass-1.2.4.1.tar.gz  \033[0m"
@@ -35,7 +40,7 @@ function download_package() {
         echo "x11-ssh-askpass-1.2.4.1.tar.gz下载成功..."
     else
         echo "x11-ssh-askpass-1.2.4.1.tar.gz下载失败...请检查网络环境是否正常"
-        exit
+        exit 1
     fi
     tar -xf x11-ssh-askpass-1.2.4.1.tar.gz
 }
@@ -55,6 +60,7 @@ function config_and_build() {
         ls /root/rpmbuild/RPMS/x86_64/
     else
         echo -e "\033[33;1mopenssh${openssh_version} 相关rpm软件包制作失败，请根据报错信息进行解决，再重新进行编译 \033[0m"
+        exit 1
     fi
 }
 

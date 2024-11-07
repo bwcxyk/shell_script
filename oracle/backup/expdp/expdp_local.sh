@@ -6,21 +6,24 @@
 # shellcheck source=/dev/null
 source /home/oracle/.bash_profile
 date=$(date +'%Y%m%d%H%M')
-user="username"
-passwd="password"
-directory="DATA_PUMP_DIR2"
+user='user'
+passwd='passwd'
+application="tms"
+directory="DATA_PUMP_DIR"
 olddate=$(date -d yesterday +'%Y%m%d')
-backdir="/data/backup/dpdump"
+backdir="/data/oracle/admin/orcl/dpdump"
 
 function backup {
     if expdp ${user}/${passwd} \
         directory=${directory} \
         schemas=${user} \
-        EXCLUDE=statistics \
-        EXCLUDE=TABLE:\"= \'SYSTEM_LOG\'\" \
+        exclude=statistics \
+        exclude=table:\"= \'SYSTEM_LOG\'\" \
+        exclude=table:\"IN\(\'SHIP_B0923\',\'TMS_LOG\'\)\" \
+        exclude=table:\"LIKE\ \'SYSTEM_LOG%\'\" \
         filesize=2048M \
         parallel=2 \
-        dumpfile=tms_"${date}"_%U.dmp \
+        dumpfile="${application}"_"${date}"_%U.dmp \
         compression=all
     then
         echo -e "\033[34;1m导出成功  \033[0m"
@@ -33,7 +36,7 @@ function backup {
 function del_old {
     echo "start delete"
     cd ${backdir} || exit
-    rm -fv tms_"${olddate}"*.dmp
+    rm -fv "${application}"_"${olddate}"*.dmp
 }
 
 function main {

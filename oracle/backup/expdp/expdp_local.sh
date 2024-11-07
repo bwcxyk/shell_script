@@ -2,7 +2,7 @@
 # expdp
 # author:yaokun
 
-#set -ex
+# set -ex
 
 # shellcheck source=/dev/null
 source /home/oracle/.bash_profile

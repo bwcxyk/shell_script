@@ -2,23 +2,46 @@
 ##auth expdp
 
 #set -ex
+
+# shellcheck source=/dev/null
 source /home/oracle/.bash_profile
-date=`date +'%Y%m%d%H%M'`
-user="user"
-passwd="pass"
+date=$(date +'%Y%m%d%H%M')
+user='user'
+passwd='passwd'
+application="tms"
 directory="DATA_PUMP_DIR"
+olddate=$(date -d yesterday +'%Y%m%d')
+backdir="/data/oracle/admin/orcl/dpdump"
 
-expdp ${user}/${passwd} \
-directory=${directory} \
-schemas=${user} \
-EXCLUDE=statistics \
-exclude=table:\"IN\(\'TMS_ORDER_SHIP_B0923\',\'OMS_TO_TMS_LOG\',\'TMS_REPORT_INCOME_COST2\',\'TMS_TRANS_TRANSPORT_PD_221226\'\)\" \
-EXCLUDE=TABLE:\"LIKE\ \'SYSTEM_LOG%\'\" \
-EXCLUDE=TABLE:\"LIKE\ \'API_REQUEST_LOG%\'\" \
-EXCLUDE=TABLE:\"LIKE\ \'API_GEO_LOG%\'\" \
-EXCLUDE=TABLE:\"LIKE\ \'WCPTOPEN_API_LOG%\'\" \
-filesize=2048M \
-parallel=4 \
-dumpfile=tms_${date}_%U.dmp \
-compression=all
+function backup {
+    if expdp ${user}/${passwd} \
+        directory=${directory} \
+        schemas=${user} \
+        exclude=statistics \
+        exclude=table:\"= \'SYSTEM_LOG\'\" \
+        exclude=table:\"IN\(\'SHIP_B0923\',\'TMS_LOG\'\)\" \
+        exclude=table:\"LIKE\ \'SYSTEM_LOG%\'\" \
+        filesize=2048M \
+        parallel=2 \
+        dumpfile="${application}"_"${date}"_%U.dmp \
+        compression=all
+    then
+        echo -e "\033[34;1m导出成功  \033[0m"
+    else
+        echo -e "\033[33;1m导出失败 \033[0m"
+        exit
+    fi
+}
 
+function del_old {
+    echo "start delete"
+    cd ${backdir} || exit
+    rm -fv "${application}"_"${olddate}"*.dmp
+}
+
+function main {
+    backup
+    # del_old
+}
+
+main

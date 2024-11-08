@@ -13,20 +13,22 @@ archive_dir="/data/ossfs/${application}/${db_type}/${currentYearMonth}"
 
 # 进行tar归档备份文件
 function pack_to_tar() {
+    echo "开始tar归档"
     if ls ${backdir}/"${application}"_"${currentDate}"*.dmp 1> /dev/null 2>&1
     then
-        echo "文件存在，开始归档"
+        echo "文件存在，开始tar归档"
         cd "${backdir}" || { echo "无法进入目录 ${backdir}"; exit 1; }
         tar cf "${application}"_"${currentDate}".tar "${application}"_"${currentDate}"*.dmp
-        echo "归档完成"
+        echo "tar归档完成"
     else
-        echo "未找到备份文件，无法归档"
+        echo "未找到备份文件，无法tar归档"
         exit 1 
     fi
 }
 
 # 创建oss中相应文件夹
 function mkdir_to_oss() {
+    echo "开始创建oss中相应文件夹"
     if [ ! -d "${archive_dir}" ]
     then
         echo "目录不存在，正在创建 ${archive_dir}"
@@ -38,6 +40,7 @@ function mkdir_to_oss() {
 
 # 传输到 oss 存储
 function trans_to_oss {
+    echo "开始传输到 OSS"
     if ! cp "${application}"_"${currentDate}".tar "${archive_dir}"/
     then
         echo "====传输到 OSS 失败!===="

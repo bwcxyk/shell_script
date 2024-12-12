@@ -5,7 +5,7 @@
 set -e
 
 zero_commit='0000000000000000000000000000000000000000'
-source_branch='develop'
+source_branch='^release/.*'
 target_branch='main'
 hotfix_pattern='^hotfix/.*'
 
@@ -25,7 +25,7 @@ while read -r oldrev newrev refname; do
     # 提取合并的源分支名称
     merged_branch=$(echo "$msg" | grep -o "Merge branch '[^']\+'" | sed "s/Merge branch '\(.*\)'/\1/")
 
-    # 检查是否是 develop 分支或 hotfix/* 分支
+    # 检查是否是 release 分支或 hotfix/* 分支
     if [[ "$merged_branch" != "$source_branch" && ! "$merged_branch" =~ $hotfix_pattern ]]; then
         echo "GL-HOOK-ERR: Only '$source_branch' or branches matching '$hotfix_pattern' can be merged into '$target_branch'."
         echo "GL-HOOK-ERR: Attempted to merge from '$merged_branch' into '$target_branch'."

@@ -1,31 +1,40 @@
 #!/bin/bash
 #
-# pre-receive hook for Commit Check
+# Git pre-receive hook for enforcing conventional commit messages.
+# Place this script in the hooks directory of your repository to enforce commit message rules.
 #
+# Usage: This hook runs automatically on `git push` and checks all incoming commits.
 
-VALID_MESSAGE_PREFIXES="^(refacto|feat|test|fix|style|docs|chore|perf)"
+# 定义正则表达式用于匹配约定式提交
+msg_regex="^(revert: )?(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\([^\)]+\))?:\s.{1,50}(\n\n.*)?(\n\n.*)?$"
+# ^(revert: )?                                                    # 可选的 revert: 前缀
+# (feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)  # 提交类型
+# (\([^\)]+\))?                                                   # 可选的 scope
+# :\s                                                             # 冒号和空格分隔符
+# .{1,50}                                                         # 描述, 1 到 50 个字符
+# (\n\n.*)?                                                       # 可选的 body
+# (\n\n.*)?$                                                      # 可选的 footer
 
-check_single_commit()
-{
-  #
-  # Put here any logic you want for your commit
-  #
-  # Skip merge commit
-  if [[ "$COMMIT_MESSAGE" =~ "Merge branch" ]]; then
+check_single_commit() {
+  # 跳过合并提交
+  if [[ "$COMMIT_MESSAGE" =~ ^Merge.* ]]; then
     echo "Merge commit detected, skipping validation."
     COMMIT_CHECK_STATUS=0
     return
   fi
-  
-  # Set COMMIT_CHECK_STATUS to non zero to indicate an error
-  if [[ "$COMMIT_MESSAGE" =~ $VALID_MESSAGE_PREFIXES:[[:space:]].*$  ]]; then
+
+  # 验证提交消息
+  if [[ "$COMMIT_MESSAGE" =~ $msg_regex ]]; then
     COMMIT_CHECK_STATUS=0
     echo "Commit message is conform."
   else
     COMMIT_CHECK_STATUS=1
     echo "Commit message \"$COMMIT_MESSAGE\" is not conform."
+    echo "Expected format: <type>(<scope>): <description>"
+    echo "Example: feat(auth): 添加登录功能"
     echo "The push has been refused by the server."
-    echo "You can change your commit message with the command: git commit --amend -m \"<NEW MESSAGE>\""
+    echo "You can change your commit message with: git commit --amend -m \"<NEW MESSAGE>\""
+    echo "See https://www.conventionalcommits.org/zh-hans/v1.0.0/ for more information."
   fi
 }
 
@@ -43,10 +52,7 @@ check_all_commits() {
 
     check_single_commit
 
-    if [ "$COMMIT_CHECK_STATUS" != "0" ]; then
-      echo "Commit validation failed for commit $REVISION ($COMMIT_AUTHOR)" >&2
-      exit 1
-    fi
+    [ "$COMMIT_CHECK_STATUS" != "0" ] && exit 1
   done
 }
 

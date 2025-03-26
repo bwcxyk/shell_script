@@ -13,6 +13,19 @@ echo "配置信息: target_branch=$target_branch, allowed_branches=${allowed_bra
 
 while read oldrev newrev refname; do
   echo "处理推送: oldrev=$oldrev newrev=$newrev refname=$refname"
+  # 处理特殊情况
+  if [[ "$oldrev" =~ ^0+$ ]]; then
+    echo "检测到新建分支操作"
+  elif [[ "$newrev" =~ ^0+$ ]]; then
+    echo "检测到删除分支操作"
+    echo "完整合并信息: <分支删除>"
+    continue
+  fi
+  
+  # 获取常规提交的合并信息
+  merge_msg=$(git log -1 --format=%B "$newrev")
+  echo "完整合并信息:"
+  echo "$merge_msg"
   
   if [[ "$refname" != "refs/heads/$target_branch" ]]; then
     echo "跳过非目标分支的推送: $refname"
@@ -28,9 +41,9 @@ while read oldrev newrev refname; do
     exit 1
   elif [[ $parent_count -ge 2 ]]; then
     echo "检测到合并提交 (parent_count=$parent_count)"
-    merge_msg=$(git log -1 --format=%B "$newrev")
-    echo "完整合并信息:"
-    echo "$merge_msg"
+    # merge_msg=$(git log -1 --format=%B "$newrev")
+    # echo "完整合并信息:"
+    # echo "$merge_msg"
     
     source_branch=$(echo "$merge_msg" | head -n1 | grep -o "Merge branch '[^']*'\|Revert \"Merge branch '[^']*'" | sed "s/Merge branch '//;s/Revert \"Merge branch '//;s/'.*//")
     echo "提取的源分支: '$source_branch'"

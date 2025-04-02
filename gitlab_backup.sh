@@ -11,7 +11,7 @@ function gitlab_config_backup {
 }
 
 function gitlab_data_backup {
-    gitlab-backup create SKIP=builds,artifacts
+    gitlab-backup create SKIP=uploads,builds,artifacts,registry,packages
 }
 
 function archive_backup {

@@ -16,6 +16,7 @@ while read oldrev newrev refname; do
   # 处理特殊情况
   if [[ "$oldrev" =~ ^0+$ ]]; then
     echo "检测到新建分支操作"
+    continue
   elif [[ "$newrev" =~ ^0+$ ]]; then
     echo "检测到删除分支操作"
     echo "完整合并信息: <分支删除>"

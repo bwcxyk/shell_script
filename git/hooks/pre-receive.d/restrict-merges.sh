@@ -3,6 +3,9 @@
 # pre-receive hook to restrict merges into 'main'
 #
 
+# 24-Hour time format
+LANG=C.UTF-8
+
 # 启用调试模式，将日志输出到文件
 exec 1> >(tee "/tmp/git_hook_debug.log") 2>&1
 echo "=== Hook started at $(date) ==="

@@ -42,7 +42,7 @@ APP_LOG_HOME=/usr/local/jenkins
 # Jenkins properties：https://www.jenkins.io/doc/book/managing/system-properties/
 
 JENKINS_OPTS="--httpPort=${APP_PORT} --prefix=/jenkins --sessionTimeout=480 --sessionEviction=14400"
-JAVA_OPTS="-server -Xmx800M -Xms800M -XX:+UseG1GC -XX:+UseStringDeduplication -Duser.timezone=Asia/Shanghai -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/"
+JAVA_OPTS="-server -Xmx800M -Xms800M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/ -Duser.timezone=Asia/Shanghai -Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true"
 
 echo "本次操作服务名：[${APP_NAME}]"
 echo "本次操作选择：[${APP_OPT}]"
